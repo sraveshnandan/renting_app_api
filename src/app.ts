@@ -1,15 +1,34 @@
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import { expressMiddleware } from "@apollo/server/express4";
 import mongoose from "mongoose";
 import { resolvers, typeDefs } from "./graphql";
 import { MongoDbUri, Port } from "./config";
+import UploadRoute from "./routes"
 
+
+import express from "express";
+import { sendEmail } from "./lib";
+import { SendEmailBYSMTP } from "./lib/mailersend";
+
+// express server 
+const app = express()
+
+// middlewares 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
+
+
+app.use("/api/v1/upload", UploadRoute)
+
+// aplollo server 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-
 });
 
+
+
+// graphql server 
 const startGrapQlServer = async () => {
   console.log("connecting to the database.")
   mongoose
@@ -17,18 +36,25 @@ const startGrapQlServer = async () => {
     .then(async (con) => {
       console.log(`📡 Databse is connected to : ${con.connection.host}`);
       console.log(`Starting GraphQl Server.`);
-      const { url } = await startStandaloneServer(server, {
-        listen: { port: Number(Port) },
-        context: async ({ req, res }) => {
-          return req.headers;
-        },
-      });
-
-      console.log(`🔗 Graphql Server is running on :${url}`);
+      await server.start();
+      app.use("/graphql", expressMiddleware(server, {
+        // options 
+        context: async ({ req }) => { return req.headers }
+      }))
+      app.listen(Port, () => {
+        console.log("graphql server started on http://localhost:5000/graphql")
+      })
     })
     .catch((error) =>
       console.log(`Unable to connect to the database due to : ${error.message}`)
     );
 };
+
+
+
+
+
+
+
 
 startGrapQlServer();

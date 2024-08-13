@@ -1,6 +1,7 @@
 import os from "os";
 import { StatusSecret } from "../config";
 import { GraphQLError } from "graphql";
+import { sendEmail } from "../lib";
 
 type NextFunction = () => void;
 // Function to authenticate Server Crediential
@@ -34,8 +35,20 @@ const StatusInfo = (secret: string) => {
 
 const GenerateOtp = () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
-  
+
   return otp.toString();
 };
 
-export { Authenticate, StatusInfo, GenerateOtp };
+
+
+
+const SendVerificationEmail = async (email: string, code: string) => {
+  try {
+    
+
+  } catch (error) {
+
+  }
+}
+
+export { Authenticate, StatusInfo, GenerateOtp, SendVerificationEmail };

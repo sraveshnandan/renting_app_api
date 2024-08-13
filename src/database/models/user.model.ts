@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import bcrypt from "bcrypt"
 
 const UserSchema = new Schema({
 
@@ -33,7 +34,8 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-        minLength: [6, "password must contain at least 6 charaters."]
+        minLength: [6, "password must contain at least 6 charaters."],
+        select: false
     },
     password_reset_config: {
         token: String,
@@ -61,6 +63,12 @@ const UserSchema = new Schema({
 }, {
     timestamps: true
 })
+
+
+
+
+
+
 
 
 const User = model("User", UserSchema);
