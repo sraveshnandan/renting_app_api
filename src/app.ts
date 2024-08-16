@@ -3,15 +3,17 @@ import { expressMiddleware } from "@apollo/server/express4";
 import mongoose from "mongoose";
 import { resolvers, typeDefs } from "./graphql";
 import { MongoDbUri, Port } from "./config";
-import UploadRoute from "./routes"
-
-
+import UploadRoute from "./routes";
 import express from "express";
-import { sendEmail } from "./lib";
-import { SendEmailBYSMTP } from "./lib/mailersend";
+
+
 
 // express server 
 const app = express()
+
+// file upload middlewares 
+
+
 
 // middlewares 
 app.use(express.json());

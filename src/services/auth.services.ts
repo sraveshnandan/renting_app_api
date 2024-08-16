@@ -1,10 +1,11 @@
 import { compareSync, hashSync } from "bcrypt";
 import { User } from "../database/models/user.model";
-import { GenerateOtp, SendVerificationEmail } from "../utils";
-import jwt from "jsonwebtoken"
+import { GenerateOtp } from "../utils";
+import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
-import { sendEmail } from "../lib";
 import { SendEmailBYSMTP } from "../lib/mailersend";
+import { isLoggedIn } from "../middlewares/Authorise";
+import { cloudinary } from "../lib/cloudinary";
 
 
 // registration function 
@@ -30,7 +31,10 @@ const handleRegistrationFunction = async (data: any) => {
         await SendEmailBYSMTP(email, "OTP verification Code", otp)
 
         const newUserPayload = {
-            ...data, password: hashedPassword, email_verification: {
+            ...data, avatar: {
+                public_id: "demo",
+                url: `https://avatar.iran.liara.run/public`
+            }, password: hashedPassword, email_verification: {
                 otp,
 
                 expiry: new Date(Date.now() + 10 * 60 * 1000) //10 minutes
@@ -211,6 +215,14 @@ const handleEmailVerificationResendOTPFunction = async (data: any) => {
             }
         }
 
+        if (user.email_verified) {
+            return {
+                success: false,
+                message: "Your account is already verified, no need to resend otp email."
+            }
+
+        }
+
         const otp = GenerateOtp();
 
         await SendEmailBYSMTP(email, "OTP verification code", otp);
@@ -241,5 +253,83 @@ const handleEmailVerificationResendOTPFunction = async (data: any) => {
 }
 
 
+// fetching user profile function 
+const handleUserProfileFetchFunction = async (data: string) => {
+    try {
+        const user: any = await isLoggedIn(data);
+        if (!user) {
+            return {
+                success: false,
+                message: "Invalid token provided, please login again."
+            }
+        }
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+            expiresIn: "30d"
+        })
+        return {
+            success: true,
+            message: "User profile refreshed successfully.",
+            user,
+            token
 
-export { handleRegistrationFunction, handleLoginFunction, handleEmailVerificationFunction, handleEmailVerificationResendOTPFunction }
+        }
+    } catch (error) {
+        console.log("error occured while fetching user profile.", error);
+        return {
+            success: false,
+            message: error.message
+        }
+
+    }
+}
+
+
+
+
+
+// updating  user profile 
+
+const handleUserProfileUpdate = async (data: any) => {
+    try {
+
+        const dataToUpdate = { ...data }
+        // deleting previous user avatar 
+        if (data.avatar && data.userAvatar.public_id !== "demo") {
+            const res = await cloudinary.uploader.destroy(data.userAvatar.public_id);
+            console.log("previous avatar deleted from storage.", res)
+        }
+        const updatedUser = await User.findByIdAndUpdate({ _id: data.id }, { ...dataToUpdate }, { new: true })
+        const token = jwt.sign({ id: updatedUser._id }, JWT_SECRET, { expiresIn: "30d" })
+        return {
+            success: true,
+            message: "Profile updated successfully.",
+            user: updatedUser,
+            token
+        }
+
+
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        }
+
+    }
+}
+
+
+// for handling forgot password  
+// for handling reset  password  
+
+
+
+
+
+export {
+    handleRegistrationFunction,
+    handleLoginFunction,
+    handleEmailVerificationFunction,
+    handleEmailVerificationResendOTPFunction,
+    handleUserProfileFetchFunction,
+    handleUserProfileUpdate
+}

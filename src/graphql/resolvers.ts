@@ -1,5 +1,7 @@
-import { GraphQLError } from "graphql";
-import { handleEmailVerificationFunction, handleEmailVerificationResendOTPFunction, handleLoginFunction, handleRegistrationFunction } from "../services/auth.services";
+import { AuthResolvers } from "./auth";
+import { CategoryResolvers } from "./category";
+import { ListingResolvers } from "./Listing";
+import { NotificationResolvers } from "./notification";
 
 const resolvers = {
   Query: {
@@ -7,45 +9,30 @@ const resolvers = {
     test: () => {
       return "working..."
     },
-    login: async (_, { data }) => {
-      const loginRes = await handleLoginFunction(data);
-      if (!loginRes.success) {
-        return new GraphQLError(loginRes.message)
+    ...AuthResolvers.Queries,
+    // category queries 
+    ...CategoryResolvers.Queries,
+    // notification queries 
+    ...NotificationResolvers.Queries,
+    // listing queries 
+    ...ListingResolvers.Queries
 
-      }
-      delete loginRes.success;
-      return loginRes
-
-    },
-    verifyAcount: async (_, { email, otp }) => {
-      const verifyRes = await handleEmailVerificationFunction({ email, otp });
-      if (!verifyRes.success) {
-        return new GraphQLError(verifyRes.message)
-
-      }
-      delete verifyRes.success;
-      return verifyRes.message
-    },
-    resendEmail: async (_, { email }) => {
-      const emailResendRes = await handleEmailVerificationResendOTPFunction({ email });
-      if (!emailResendRes.success) {
-        return new GraphQLError(emailResendRes.message)
-
-      }
-      delete emailResendRes.success;
-      return emailResendRes.message
-    }
 
   },
   Mutation: {
-    register: async (_, { data }, context) => {
-      const registerRes = await handleRegistrationFunction(data);
-      if (!registerRes.success) {
-        return new GraphQLError(registerRes.message)
-      }
-      delete registerRes.success
-      return registerRes
+    // auth mutations 
+    ...AuthResolvers.Mutations,
+    // category mutations 
+    ...CategoryResolvers.Mutations,
+    // notification mutations 
+    ...NotificationResolvers.Mutations,
+    // listing mutations 
+    ...ListingResolvers.Mutations,
 
+    singleUpload: async (_, { file }) => {
+      const { stream, filename, mimetype, encoding } = await file;
+      console.log("file", { stream, filename, mimetype, encoding })
+      return "testing.."
     }
 
   }
