@@ -9,7 +9,7 @@ const CategorySchema = new Schema({
         public_id: String,
         url: String
     },
-    createor: {
+    creator: {
         type: Schema.Types.ObjectId,
         ref: "User"
     },

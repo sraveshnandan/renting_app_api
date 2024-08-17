@@ -89,7 +89,7 @@ type Category {
     _id:String!
     name:String!
     image:Image
-    createor:User
+    creator:User
     createdAt:DateTime
     updatedAt:DateTime
 }
@@ -98,9 +98,20 @@ type Category {
 # category inputs 
 
 input CreateCategoryInput {
-    name:String!
+    name:String
     image:Banner
-    createor:String!
+    creator:String
+}
+
+ input updateCategoryInput{
+    id:String
+    name:String,
+    image:Banner,
+ }
+
+type CategoryResponse {
+    message:String,
+    category:Category,
 }
 
 # listing schema 
@@ -108,7 +119,7 @@ input CreateCategoryInput {
 type Listing {
     _id:String
     name:String
-    categories:[Category]
+    category:Category
     banners:[Image]
     facilities:[String]
     opening_time:String
@@ -173,10 +184,12 @@ input ExtraInput {
     free_electricty: Boolean
 }
 input CreateListingInput {
+    id:String
     name:String!
     banners:[Banner]
-    categories:[String]
+    category:String
     facilities:[String]
+    owner:String!
     opening_time:String!
     closing_time:String!
     address:String!
@@ -196,21 +209,32 @@ type UploadedFileResponse {
       url: String!
     }
 
+    type ListResponse {
+        listing:Listing,
+        message:String
+    }
+
+    type ListingRes {
+        message:String,
+        listings:[Listing]
+        listing:Listing
+    }
+
 
 # all queries 
     type Query {
-        test:String
+        test:String # done
         # auth action queries 
-        login(data:LoginInput):AuthResponse
-        verifyAcount(email:String,otp:String):String
-        resendEmail(email:String!):String
-        fetchUserProfile:AuthResponse
+        login(data:LoginInput):AuthResponse # done
+        verifyAcount(email:String,otp:String):String #done
+        resendEmail(email:String!):String # done
+        fetchUserProfile:AuthResponse # done
         # notification action queries 
         getAllNotifications(limit:Number):[Notification]
         # category action queries 
-        categories(limit:Number):[Category]
+        categories(limit:Number):[Category] #done
         # listing action queries 
-        listings(limit:Number):[Listing]
+        listings(limit:Number):ListingRes
     }
 
 
@@ -218,17 +242,16 @@ type UploadedFileResponse {
 # all mutations 
 type Mutation {
     # auth action mutations 
-    register(data:RegisterInput):AuthResponse
-    updateProfile(data:UpdateProfileInput):AuthResponse
+    register(data:RegisterInput):AuthResponse #done
+    updateProfile(data:UpdateProfileInput):AuthResponse #done
     # category action mutations 
-    createCategory(data:CreateCategoryInput):Category
-    deleteCategory(ID:String!):String
-    updateCAtegory(data:CreateCategoryInput):Category
+    createCategory(data:CreateCategoryInput):CategoryResponse #done
+    deleteCategory(ID:String!):String  #done
+    updateCAtegory(data:updateCategoryInput):Category #done
     # listing action mutations 
-    createListing(data:CreateListingInput):Listing
+    createListing(data:CreateListingInput):ListResponse #done
     deleteListing(ID:String!):String
-    updateListing(data:CreateListingInput):Listing
-
+    updateListing(data:CreateListingInput):ListResponse
 
     singleUpload(file: Upload!): String
 
