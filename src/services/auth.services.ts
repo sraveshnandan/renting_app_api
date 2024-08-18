@@ -30,14 +30,17 @@ const handleRegistrationFunction = async (data: any) => {
         const otp = GenerateOtp()
         await SendEmailBYSMTP(email, "OTP verification Code", otp)
 
-        const newUserPayload = {
-            ...data, avatar: {
-                public_id: "demo",
-                url: `https://avatar.iran.liara.run/public`
-            }, password: hashedPassword, email_verification: {
+        let newUserPayload = {
+            ...data, password: hashedPassword, email_verification: {
                 otp,
 
                 expiry: new Date(Date.now() + 10 * 60 * 1000) //10 minutes
+            }
+        };
+        if (!data.avatar) {
+            newUserPayload.avatar = {
+                public_id: "demo",
+                url: "https://avatar.iran.liara.run/public"
             }
         }
 
