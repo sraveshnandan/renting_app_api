@@ -41,6 +41,7 @@ input RegisterInput {
     last_name:String,
     email:String,
     password:String
+    avatar:Banner
 }
 
 input UserRecomendationInput{
