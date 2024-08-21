@@ -236,6 +236,7 @@ type UploadedFileResponse {
         categories(limit:Number):[Category] #done
         # listing action queries 
         listings(limit:Number):ListingRes
+        getUserListing:Listing
     }
 
 

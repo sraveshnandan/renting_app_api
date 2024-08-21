@@ -4,13 +4,14 @@ import { cloudinary } from "../lib/cloudinary";
 
 const hadleCreateListingFunction = async (data: Record<string, any>) => {
     try {
+        console.log("hi")
         const { user } = data;
         let newListingpayload = {
             ...data
 
         }
 
-        if (user.role !== "owner" && user.role !== "admin") {
+        if (user.role !== "owner") {
             return {
                 success: false,
                 message: "You are not allowed to create a listing."
@@ -142,10 +143,35 @@ const handleUpdateListing = async (data: any) => {
     }
 }
 
+const GetUserListing = async (userId: string) => {
+    try {
+        const listing = await Listing.findOne({ owner: userId }).populate("owner category");
+        if (!listing) {
+            return {
+                success: false,
+                message: "No listing found."
+            }
+        }
+
+        return {
+            success: true,
+            listing
+        }
+
+
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        }
+    }
+}
+
 
 export {
     hadleCreateListingFunction,
     handleGetAllListings,
     handleDeleteListing,
-    handleUpdateListing
+    handleUpdateListing,
+    GetUserListing
 }

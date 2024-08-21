@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { isLoggedIn } from "../../middlewares/Authorise"
-import { hadleCreateListingFunction, handleDeleteListing, handleGetAllListings, handleUpdateListing } from "../../services/listing.services";
+import { GetUserListing, hadleCreateListingFunction, handleDeleteListing, handleGetAllListings, handleUpdateListing } from "../../services/listing.services";
 
 const ListingResolvers = {
     Queries: {
@@ -12,6 +12,18 @@ const ListingResolvers = {
             delete allRes.success;
 
             return allRes
+        },
+        getUserListing: async (_, { }, context) => {
+            const user: any = await isLoggedIn(context.token);
+            if (!user.first_name) {
+                return new GraphQLError("Unauthorise, please login to create this listing.")
+            }
+
+            const userListRes = await GetUserListing(user._id);
+            if (!userListRes.success) {
+                return new GraphQLError(userListRes.message)
+            }
+            return userListRes.listing
         }
     },
     Mutations: {
