@@ -2,11 +2,10 @@ import nodemailer from "nodemailer";
 
 // Configure Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  service: "smtp.mailersend.net",
-  port: 587,
+  service: "Gmail",
   auth: {
-    user: "MS_jSeuFq@trial-v69oxl535qxg785k.mlsender.net", // Your Gmail email address
-    pass: "qlwS1R1JtgyV5KIv", // Your Gmail password,
+    user: "kumarsravesh39@gmail.com", // Your Gmail email address
+    pass: "frkbwqlnteylvqjj", // Your Gmail password
   },
 
 });

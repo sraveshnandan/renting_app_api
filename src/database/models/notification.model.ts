@@ -3,7 +3,7 @@ import { model, Schema } from "mongoose";
 const NotificationSchema = new Schema({
     unreaded: {
         type: Boolean,
-        default: false
+        default: true
     },
     title: {
         type: String,

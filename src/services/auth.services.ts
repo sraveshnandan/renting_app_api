@@ -6,12 +6,13 @@ import { JWT_SECRET } from "../config";
 import { SendEmailBYSMTP } from "../lib/mailersend";
 import { isLoggedIn } from "../middlewares/Authorise";
 import { cloudinary } from "../lib/cloudinary";
+import { sendEmail } from "../lib";
+import { Notification } from "../database/models/notification.model";
 
 
 // registration function 
 const handleRegistrationFunction = async (data: any) => {
     try {
-
         const { first_name, last_name, email, password } = data;
         // checking if user already exists with this email 
         const isEmailExists = await User.findOne({ email })
@@ -28,7 +29,8 @@ const handleRegistrationFunction = async (data: any) => {
 
         // sending verification email 
         const otp = GenerateOtp()
-        await SendEmailBYSMTP(email, "OTP verification Code", otp)
+        // await SendEmailBYSMTP(email, "OTP verification Code", otp)
+        await sendEmail(email, "OTP Verification Code", otp)
 
         let newUserPayload = {
             ...data, password: hashedPassword, email_verification: {
@@ -184,6 +186,13 @@ const handleEmailVerificationFunction = async (data: any) => {
 
 
 
+        // creatinh new notification 
+        const newNotificationPayload = {
+            title: "Your account verified successfully.",
+            description: `Dear ${user.first_name}, we are glad to inform you that your account is successfully verified. Now you can access our application without any restrictions. Thank you.`,
+            reciver: user._id
+        }
+        await Notification.create(newNotificationPayload);
 
         // returning final response 
         return {
@@ -303,6 +312,14 @@ const handleUserProfileUpdate = async (data: any) => {
         }
         const updatedUser = await User.findByIdAndUpdate({ _id: data.id }, { ...dataToUpdate }, { new: true })
         const token = jwt.sign({ id: updatedUser._id }, JWT_SECRET, { expiresIn: "30d" })
+
+        // creatinh new notification 
+        const newNotificationPayload = {
+            title: "Your profile updated.",
+            description: "The changes you have requested to update in your Profile is completed now. Thank you. ",
+            reciver: updatedUser._id
+        }
+        await Notification.create(newNotificationPayload);
         return {
             success: true,
             message: "Profile updated successfully.",

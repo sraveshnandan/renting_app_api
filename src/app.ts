@@ -5,6 +5,8 @@ import { resolvers, typeDefs } from "./graphql";
 import { MongoDbUri, Port } from "./config";
 import UploadRoute from "./routes";
 import express from "express";
+import { sendEmail } from "./lib";
+
 
 
 
@@ -46,6 +48,8 @@ const startGrapQlServer = async () => {
       app.listen(Port, () => {
         console.log("graphql server started on http://localhost:5000/graphql")
       })
+
+
     })
     .catch((error) =>
       console.log(`Unable to connect to the database due to : ${error.message}`)

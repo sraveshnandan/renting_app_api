@@ -42,6 +42,7 @@ input RegisterInput {
     email:String,
     password:String
     avatar:Banner
+    role:String
 }
 
 input UserRecomendationInput{
@@ -254,8 +255,9 @@ type Mutation {
     createListing(data:CreateListingInput):ListResponse #done
     deleteListing(ID:String!):String
     updateListing(data:CreateListingInput):ListResponse
-
     singleUpload(file: Upload!): String
+    # notification action mutation 
+    updateNotification(ID:String):Notification
 
 }
 
