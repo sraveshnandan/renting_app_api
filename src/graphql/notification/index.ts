@@ -24,7 +24,6 @@ const NotificationResolvers = {
                 return new GraphQLError("Unauthorise, please login to create this listing.")
 
             }
-
             const notRes = await handleMarkNotificationRead(ID);
             if (!notRes.success) {
                 return new GraphQLError(notRes.message)

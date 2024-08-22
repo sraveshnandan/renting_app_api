@@ -1,3 +1,4 @@
+
 import { Listing } from "../database/models/lising.model";
 import { Notification } from "../database/models/notification.model";
 import { cloudinary } from "../lib/cloudinary";
@@ -43,7 +44,7 @@ const hadleCreateListingFunction = async (data: Record<string, any>) => {
 
 const handleGetAllListings = async (limit: number) => {
     try {
-        const allListings = await Listing.find({}).sort({ createdAt: -1 }).limit(limit).populate("owner lising");
+        const allListings = await Listing.find({}).sort({ createdAt: -1 }).limit(limit).populate("owner");
 
         if (allListings.length === 0) {
             return {
@@ -70,15 +71,15 @@ const handleDeleteListing = async (data: any) => {
 
         const { user, id } = data;
 
-        let lising: any = await Listing.findById(id).populate("owner");
-        if (!lising) {
+        let listing: any = await Listing.findById(id).populate("owner");
+        if (!listing) {
             return {
                 success: false,
                 message: "Invalid  ID, No  Listing found."
             }
         }
 
-        const isOwner = lising.owner._id.toString() === user._id.toString();
+        const isOwner = listing.owner._id.toString() === user._id.toString();
         if (!isOwner) {
             return {
                 success: false,
@@ -88,7 +89,7 @@ const handleDeleteListing = async (data: any) => {
 
         // deleting listing images from cdn 
 
-        lising.banners.map((item) => {
+        listing.banners.map((item) => {
             return cloudinary.uploader.destroy(item.public_id)
         })
 
@@ -168,7 +169,7 @@ const handleUpdateListing = async (data: any) => {
 
 const GetUserListing = async (userId: string) => {
     try {
-        const listing = await Listing.findOne({ owner: userId }).populate("owner lising");
+        const listing = await Listing.findOne({ owner: userId }).populate("owner");
         if (!listing) {
             return {
                 success: false,
