@@ -44,7 +44,7 @@ const hadleCreateListingFunction = async (data: Record<string, any>) => {
 
 const handleGetAllListings = async (limit: number) => {
     try {
-        const allListings = await Listing.find({}).sort({ createdAt: -1 }).limit(limit).populate("owner");
+        const allListings = await Listing.find({}).sort({ createdAt: -1 }).limit(limit).populate("owner category");
 
         if (allListings.length === 0) {
             return {
@@ -169,7 +169,7 @@ const handleUpdateListing = async (data: any) => {
 
 const GetUserListing = async (userId: string) => {
     try {
-        const listing = await Listing.findOne({ owner: userId }).populate("owner");
+        const listing = await Listing.findOne({ owner: userId }).populate("owner category");
         if (!listing) {
             return {
                 success: false,
