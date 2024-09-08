@@ -223,6 +223,13 @@ type UploadedFileResponse {
     }
 
 
+    input PasswordResetInput{
+        email:String,
+        otp:String,
+        newPassword:String
+    }
+
+
 # all queries 
     type Query {
         test:String # done
@@ -231,6 +238,8 @@ type UploadedFileResponse {
         verifyAcount(email:String,otp:String):String #done
         resendEmail(email:String!):String # done
         fetchUserProfile:AuthResponse # done
+        forgotPassword(email:String!):String
+        resetPassword(data:PasswordResetInput):String
         # notification action queries 
         getAllNotifications(limit:Number):[Notification]
         # category action queries 

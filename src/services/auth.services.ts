@@ -339,7 +339,88 @@ const handleUserProfileUpdate = async (data: any) => {
 
 
 // for handling forgot password  
+
+
+const handleForgotPassword = async (email: string) => {
+    try {
+        let user = await User.findOne({ email });
+        if (!user) {
+            return {
+                success: false,
+                message: "No account found."
+            }
+        }
+        const OTP = GenerateOtp();
+
+
+        user.password_reset_config = {
+            token: OTP,
+            expiry: new Date(Date.now() + 10 * 60 * 1000)
+        }
+
+        await user.save();
+        await sendEmail(user.email, "Password reset OTP", OTP)
+        return {
+            success: true,
+            message: `Password reset otp sent to ${user.email}`
+        }
+
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        }
+    }
+}
 // for handling reset  password  
+
+
+const handlePasswordReset = async (data: { otp: string, email: string, newPassword: string }) => {
+    try {
+        const { email, otp, newPassword } = data;
+        let user = await User.findOne({ email });
+        if (!user) {
+            return {
+                success: false,
+                message: "No account found."
+            }
+        }
+
+        const isOTPMatched = user.password_reset_config.token.toString() === otp.toString();
+        if (!isOTPMatched) {
+            return {
+                success: false,
+                message: "Invalid OTP."
+            }
+        }
+
+        // hashing the password 
+        const newhashedPassword = hashSync(newPassword, 10);
+
+        user.password = newhashedPassword;
+
+        await user.save();
+
+        // creatinh new notification 
+        const newNotificationPayload = {
+            title: "Your password has been updated successfully.",
+            description: "Your account password is updated now, you can use your new password  to login in our app. Thank you",
+            reciver: user._id
+        }
+        await Notification.create(newNotificationPayload);
+
+        return {
+            success: true,
+            message: "Password reset successfully."
+        }
+
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        }
+    }
+}
 
 
 
@@ -351,5 +432,7 @@ export {
     handleEmailVerificationFunction,
     handleEmailVerificationResendOTPFunction,
     handleUserProfileFetchFunction,
-    handleUserProfileUpdate
+    handleUserProfileUpdate,
+    handlePasswordReset,
+    handleForgotPassword
 }

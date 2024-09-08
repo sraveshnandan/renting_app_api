@@ -2,7 +2,9 @@ import { GraphQLError } from "graphql";
 import {
     handleEmailVerificationFunction,
     handleEmailVerificationResendOTPFunction,
+    handleForgotPassword,
     handleLoginFunction,
+    handlePasswordReset,
     handleRegistrationFunction,
     handleUserProfileFetchFunction,
     handleUserProfileUpdate
@@ -48,7 +50,24 @@ const AuthResolvers = {
                 return new GraphQLError(fetchProfileRes.message)
             }
             return fetchProfileRes
+        },
+        forgotPassword: async (_, { email }) => {
+            const res = await handleForgotPassword(email);
+            if (!res.success) {
+                return new GraphQLError(res.message)
+            }
+            return res.message
+        },
+        resetPassword: async (_, { data }) => {
+            const res = await handlePasswordReset(data);
+            if (!res.success) {
+                return new GraphQLError(res.message)
+            }
+            return res.message
         }
+
+
+
     },
     Mutations: {
         register: async (_, { data }, context) => {
