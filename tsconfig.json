@@ -7,9 +7,9 @@
     "lib": [
       "es2020"
     ],
-    "target": "es2020",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "NodeNext",
+    // "moduleResolution": "node", 
     "esModuleInterop": true,
     "types": [
       "node"
