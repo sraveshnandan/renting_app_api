@@ -3,6 +3,15 @@ import { JWT_SECRET } from "../config"
 import { User } from "../database/models/user.model";
 import { GraphQLError } from "graphql";
 
+const IsAuthenticated = async (req, res, next, token) => {
+    try {
+
+    } catch (error) {
+
+
+    }
+}
+
 const isLoggedIn = async (token: string) => {
     try {
         const decoded: any = jwt.verify(token, JWT_SECRET);
