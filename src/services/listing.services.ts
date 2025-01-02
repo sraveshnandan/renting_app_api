@@ -169,7 +169,7 @@ const handleUpdateListing = async (data: any) => {
 
 const GetUserListing = async (userId: string) => {
     try {
-        const listing = await Listing.findOne({ owner: userId }).populate("owner category");
+        const listing = await Listing.find({ owner: userId }).populate("owner category");
         if (!listing) {
             return {
                 success: false,
