@@ -2,10 +2,11 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import mongoose from "mongoose";
 import { resolvers, typeDefs } from "./graphql";
-import { MongoDbUri, Port } from "./config";
+import { MongoDbUri, NODE_ENV, Port } from "./config";
 import UploadRoute from "./routes";
 import express from "express";
 import cors from "cors";
+import { SendEmailBySMTP } from "./lib/resend";
 
 // express server
 const app = express();
@@ -18,19 +19,21 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/upload", UploadRoute);
 
-// aplollo server
+// Apollo server
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  nodeEnv: NODE_ENV,
+  plugins: []
 });
 
 // graphql server
-const startGrapQlServer = async () => {
+const startGraphQlServer = async () => {
   console.log("connecting to the database.");
   mongoose
     .connect(MongoDbUri)
     .then(async (con) => {
-      console.log(`📡 Databse is connected to : ${con.connection.host}`);
+      console.log(`📡 Database is connected to : ${con.connection.host}`);
       console.log(`Starting GraphQl Server.`);
       await server.start();
       app.use(
@@ -39,7 +42,7 @@ const startGrapQlServer = async () => {
           // options
           context: async ({ req }) => {
             return req.headers;
-          },
+          }
         }),
       );
       app.listen(Port, () => {
@@ -53,4 +56,4 @@ const startGrapQlServer = async () => {
     );
 };
 
-startGrapQlServer();
+startGraphQlServer();

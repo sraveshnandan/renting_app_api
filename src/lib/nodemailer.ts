@@ -18,7 +18,7 @@ const sendEmail = async (
 ): Promise<boolean> => {
   // HTML email template with OTP
   const htmlTemplate = `
-  Welcome to Renting app owner , 
+  Welcome to Hostlio , 
   your otp  is ${otp} only valid for 10 minutes.
   `;
 

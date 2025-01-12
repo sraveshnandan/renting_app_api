@@ -3,7 +3,7 @@ import { User } from "../database/models/user.model";
 import { GenerateOtp } from "../utils";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
-import { SendEmailBYSMTP } from "../lib/mailersend";
+import { SendEmailBySMTP } from "../lib/resend";
 import { isLoggedIn } from "../middlewares/Authorise";
 import { cloudinary } from "../lib/cloudinary";
 import { sendEmail } from "../lib";
@@ -29,9 +29,7 @@ const handleRegistrationFunction = async (data: any) => {
 
         // sending verification email 
         const otp = GenerateOtp()
-        // await SendEmailBYSMTP(email, "OTP verification Code", otp)
-        await sendEmail(email, "OTP Verification Code", otp)
-
+        await SendEmailBySMTP(email, "OTP verification Code", otp);
         let newUserPayload = {
             ...data, password: hashedPassword, email_verification: {
                 otp,
@@ -237,7 +235,7 @@ const handleEmailVerificationResendOTPFunction = async (data: any) => {
 
         const otp = GenerateOtp();
 
-        await SendEmailBYSMTP(email, "OTP verification code", otp);
+        await SendEmailBySMTP(email, "OTP verification code", otp);
 
 
 

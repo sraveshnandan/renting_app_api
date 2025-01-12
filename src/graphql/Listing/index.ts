@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { isLoggedIn } from "../../middlewares/Authorise"
-import { GetUserListing, hadleCreateListingFunction, handleDeleteListing, handleGetAllListings, handleUpdateListing } from "../../services/listing.services";
+import { GetUserListing, handleCreateListingFunction, handleDeleteListing, handleGetAllListings, handleUpdateListing } from "../../services/listing.services";
 
 const ListingResolvers = {
     Queries: {
@@ -32,7 +32,7 @@ const ListingResolvers = {
             if (!user.first_name) {
                 return new GraphQLError("Unauthorise, please login to create this listing.")
             }
-            const listRes = await hadleCreateListingFunction({ ...data, user });
+            const listRes = await handleCreateListingFunction({ ...data, user });
             if (!listRes.success) {
                 return new GraphQLError(listRes.message);
             }

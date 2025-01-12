@@ -3,10 +3,10 @@ import { Listing } from "../database/models/lising.model";
 import { Notification } from "../database/models/notification.model";
 import { cloudinary } from "../lib/cloudinary";
 
-const hadleCreateListingFunction = async (data: Record<string, any>) => {
+const handleCreateListingFunction = async (data: Record<string, any>) => {
     try {
         const { user } = data;
-        let newListingpayload = {
+        let newListingPayload = {
             ...data
 
         }
@@ -17,12 +17,12 @@ const hadleCreateListingFunction = async (data: Record<string, any>) => {
             }
         }
 
-        const newListing = await Listing.create(newListingpayload);
+        const newListing = await Listing.create(newListingPayload);
 
-        // creatinh new notification 
+        // creating new notification 
         const newNotificationPayload = {
             title: "Your Listing created sucessfully.",
-            description: "We are happy to inform you, that your listing is careted successfully, and it will be live in our application after some security checks by our team in few hours.",
+            description: "We are happy to inform you, that your listing is created successfully, and it will be live in our application after some security checks by our team in few hours.",
             reciver: user._id
         }
         await Notification.create(newNotificationPayload);
@@ -97,9 +97,9 @@ const handleDeleteListing = async (data: any) => {
 
         await Listing.deleteOne({ _id: id });
 
-        // creatinh new notification 
+        // creating new notification 
         const newNotificationPayload = {
-            title: "Your Listing is delted sucessfully.",
+            title: "Your Listing deleted successfully.",
             description: "Your request to delete your listing is successfully processed. Your listing is deleted now. Thank you. ",
             reciver: user._id
         }
@@ -143,7 +143,7 @@ const handleUpdateListing = async (data: any) => {
 
         const updatedListing = await Listing.findByIdAndUpdate({ _id: listing._id }, { ...data }, { new: true });
 
-        // creatinh new notification 
+        // creating new notification 
         const newNotificationPayload = {
             title: "Your Listing is updated sucessfully.",
             description: "The changes you have requested to update in your listing id completed now and it will be reflected in application in few minutes after reviewing. Thank you. ",
@@ -193,7 +193,7 @@ const GetUserListing = async (userId: string) => {
 
 
 export {
-    hadleCreateListingFunction,
+    handleCreateListingFunction,
     handleGetAllListings,
     handleDeleteListing,
     handleUpdateListing,
