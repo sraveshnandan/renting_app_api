@@ -6,7 +6,6 @@ import { JWT_SECRET } from "../config";
 import { SendEmailBySMTP } from "../lib/resend";
 import { isLoggedIn } from "../middlewares/Authorise";
 import { cloudinary } from "../lib/cloudinary";
-import { sendEmail } from "../lib";
 import { Notification } from "../database/models/notification.model";
 
 
@@ -357,7 +356,7 @@ const handleForgotPassword = async (email: string) => {
         }
 
         await user.save();
-        await sendEmail(user.email, "Password reset OTP", OTP)
+        await SendEmailBySMTP(user.email, "Password reset OTP", OTP)
         return {
             success: true,
             message: `Password reset otp sent to ${user.email}`
