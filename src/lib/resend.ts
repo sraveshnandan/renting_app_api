@@ -1,12 +1,10 @@
 import { Resend } from "resend";
 import { RESEND_API_KEY } from "../config";
 
-
 const resend = new Resend(RESEND_API_KEY);
 
-
 const SendEmailBySMTP = async (email: string, subject: string, otp: string) => {
-    const htmlTemplate = `<!DOCTYPE html>
+  const htmlTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +26,7 @@ const SendEmailBySMTP = async (email: string, subject: string, otp: string) => {
             overflow: hidden;
         }
         .email-header {
-            background-color: #4CAF50;
+            background-color: #0095F6;
             color: #ffffff;
             text-align: center;
             padding: 20px;
@@ -42,7 +40,7 @@ const SendEmailBySMTP = async (email: string, subject: string, otp: string) => {
             display: block;
             font-size: 24px;
             font-weight: bold;
-            color: #4CAF50;
+            color: #0095F6;
             text-align: center;
             margin: 20px 0;
         }
@@ -55,7 +53,7 @@ const SendEmailBySMTP = async (email: string, subject: string, otp: string) => {
         }
         .btn {
             display: inline-block;
-            background-color: #4CAF50;
+            background-color: #0095F6;
             color: #ffffff;
             padding: 10px 20px;
             border-radius: 5px;
@@ -98,18 +96,18 @@ const SendEmailBySMTP = async (email: string, subject: string, otp: string) => {
 
   `;
 
-    const { data, error } = await resend.emails.send({
-        from: "Hostlio <admin@hostlio.in>",
-        to: email,
-        subject: subject,
-        html: htmlTemplate,
-    });
+  const { data, error } = await resend.emails.send({
+    from: "Hostlio <admin@hostlio.in>",
+    to: email,
+    subject: subject,
+    html: htmlTemplate,
+  });
 
-    if (error) {
-        return `Unable to send email to ${email} due to ${error.message}`;
-    }
+  if (error) {
+    return `Unable to send email to ${email} due to ${error.message}`;
+  }
 
-    return `Email sent to ${email} id:[${data.id}]`
-}
+  return `Email sent to ${email} id:[${data.id}]`;
+};
 
-export { SendEmailBySMTP }
+export { SendEmailBySMTP };

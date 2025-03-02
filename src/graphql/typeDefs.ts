@@ -8,6 +8,12 @@ type Image{
     public_id:String,
     url:String
 }
+
+type PhoneVerification {
+    otp:String,
+    verified:Boolean
+    expiry:DateTime
+}
 # user schema 
 type User {
     _id:String,
@@ -19,6 +25,7 @@ type User {
     role:String,
     phone_no:Number,
     email_verification:Config,
+    phone_verification:PhoneVerification,
     recomendation:Recomendation,
     createdAt:DateTime,
     updatedAt:DateTime
@@ -40,6 +47,7 @@ input RegisterInput {
     first_name:String,
     last_name:String,
     email:String,
+    phone_no:Number
     password:String
     avatar:Banner
     role:String
@@ -116,6 +124,17 @@ type CategoryResponse {
     category:Category,
 }
 
+# Review Schema 
+type Review {
+    user:User
+    message:String
+    star:Number
+}
+# Video Schema 
+type Video{
+    public_id:String,
+    url:String
+}
 # listing schema 
 
 type Listing {
@@ -123,16 +142,20 @@ type Listing {
     name:String
     category:Category
     banners:[Image]
+    video:Video
     facilities:[String]
     opening_time:String
     closing_time:String
     owner:User
     address:String
     contact_no:String
+    is_call_allowed:Boolean
     no_of_rooms:Number
     monthly_rent:Number
     electricity_cost:Number
     extra:Extra
+    ratings:Number
+    reviews:[Review]
     createdAt:DateTime,
     updatedAt:DateTime
 }
@@ -185,10 +208,16 @@ input ExtraInput {
     for_boys: Boolean,
     free_electricty: Boolean
 }
+
+input VideoInput {
+    public_id:String,
+    url:String
+}
 input CreateListingInput {
     id:String
     name:String!
     banners:[Banner]
+    video:VideoInput
     category:String
     facilities:[String]
     owner:String!
@@ -196,6 +225,7 @@ input CreateListingInput {
     closing_time:String!
     address:String!
     contact_no:String!
+    is_call_allowed:Boolean
     no_of_rooms:Number!
     monthly_rent:Number!
     electricity_cost:Number!
@@ -229,13 +259,22 @@ type UploadedFileResponse {
         newPassword:String
     }
 
+    input LoginWithMobileInput {
+        phone_no:Number,
+        otp:Number
+    }
+    
+
 
 # all queries 
     type Query {
         test:String # done
         # auth action queries 
-        login(data:LoginInput):AuthResponse # done
-        verifyAcount(email:String,otp:String):String #done
+        sendOtp(phone_no:Number!):String
+        verifyOtp(phone_no:Number!, otp:Number!):AuthResponse
+        loginWithEmail(data:LoginInput):AuthResponse # done
+        loginWithMobileOtp(data:LoginWithMobileInput):AuthResponse #
+        verifyEmail(email:String,otp:String):String #done
         resendEmail(email:String!):String # done
         fetchUserProfile:AuthResponse # done
         forgotPassword(email:String!):String
@@ -270,7 +309,6 @@ type Mutation {
 
 }
 
-`
+`;
 
-
-export { typeDefs }
+export { typeDefs };

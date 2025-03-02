@@ -6,7 +6,6 @@ import { MongoDbUri, NODE_ENV, Port } from "./config";
 import UploadRoute from "./routes";
 import express from "express";
 import cors from "cors";
-import { SendEmailBySMTP } from "./lib/resend";
 
 // express server
 const app = express();
@@ -24,7 +23,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   nodeEnv: NODE_ENV,
-  plugins: []
+  plugins: [],
 });
 
 // graphql server
@@ -42,17 +41,15 @@ const startGraphQlServer = async () => {
           // options
           context: async ({ req }) => {
             return req.headers;
-          }
-        }),
+          },
+        })
       );
       app.listen(Port, () => {
         console.log("graphql server started on http://localhost:5000/graphql");
       });
     })
     .catch((error) =>
-      console.log(
-        `Unable to connect to the database due to : ${error.message}`,
-      ),
+      console.log(`Unable to connect to the database due to : ${error.message}`)
     );
 };
 
