@@ -265,6 +265,11 @@ type UploadedFileResponse {
     }
     
 
+    input SignInInput {
+        token:String!,
+        role:String
+    }
+
 
 # all queries 
     type Query {
@@ -290,9 +295,11 @@ type UploadedFileResponse {
 
 
 
+
 # all mutations 
 type Mutation {
     # auth action mutations 
+    SignIn(data:SignInInput):AuthResponse # done
     register(data:RegisterInput):AuthResponse #done
     updateProfile(data:UpdateProfileInput):AuthResponse #done
     # category action mutations 

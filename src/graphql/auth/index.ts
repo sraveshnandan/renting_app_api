@@ -7,6 +7,7 @@ import {
   handleOtpSendFunction,
   handlePasswordReset,
   handleRegistrationFunction,
+  handleSignIn,
   handleUserProfileFetchFunction,
   handleUserProfileUpdate,
 } from "../../services/auth.services";
@@ -80,6 +81,14 @@ const AuthResolvers = {
     },
   },
   Mutations: {
+    SignIn: async (_, { data }) => {
+      const SignInRes = await handleSignIn(data?.token, data?.role);
+      if (!SignInRes.success) {
+        return new GraphQLError(SignInRes.message);
+      }
+      delete SignInRes.success;
+      return SignInRes;
+    },
     register: async (_, { data }, context) => {
       const registerRes = await handleRegistrationFunction(data);
       if (!registerRes.success) {

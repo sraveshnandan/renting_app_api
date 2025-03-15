@@ -21,7 +21,7 @@ const handleCreateListingFunction = async (data: Record<string, any>) => {
 
         // creating new notification 
         const newNotificationPayload = {
-            title: "Your Listing created sucessfully.",
+            title: "Your Listing created successfully.",
             description: "We are happy to inform you, that your listing is created successfully, and it will be live in our application after some security checks by our team in few hours.",
             reciver: user._id
         }

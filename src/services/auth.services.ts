@@ -2,15 +2,77 @@ import { compareSync, hashSync } from "bcrypt";
 import { User } from "../database/models/user.model";
 import { GenerateOtp, sendOtpOnPhoneNumber } from "../utils";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET, PHMAIL_API_KEY } from "../config";
 import { SendEmailBySMTP } from "../lib/resend";
 import { isLoggedIn } from "../middlewares/Authorise";
 import { cloudinary } from "../lib/cloudinary";
 import { Notification } from "../database/models/notification.model";
-import { LoginWithPhonePayload, PhoneVerificationPayload } from "../types";
+import {
+  DecodedTokenData,
+  LoginWithPhonePayload,
+  PhoneVerificationPayload,
+} from "../types";
+
+// handling OTP SignIn
+
+const handleSignIn = async (token: string, role?: string) => {
+  try {
+    const decodedTokenData: DecodedTokenData | any = jwt.verify(
+      token,
+      PHMAIL_API_KEY
+    );
+    console.log("decoded data", decodedTokenData);
+    // checking user account in database
+    const phone_no = Number(decodedTokenData.phone_no);
+    const user = await User.findOne({ phone_no });
+
+    if (!user) {
+      // if token consist a user_first_name then creating a new user account
+      console.log("No account found , creating new One");
+      const user = await User.create({
+        phone_no: Number(decodedTokenData?.phone_no),
+        first_name: decodedTokenData?.user_first_name || "John",
+        last_name: decodedTokenData?.user_last_name || "Doe",
+        avatar: {
+          public_id: "demo",
+          url: "https://avatar.iran.liara.run/public",
+        },
+        phone_verification: {
+          verified: true,
+        },
+        role: role || "user",
+      });
+      // generating a new token
+      const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+        expiresIn: "30d",
+      });
+      return {
+        success: true,
+        token,
+        user,
+        message: "Account created successfully.",
+      };
+    }
+    const AuthToken = jwt.sign({ id: user._id }, JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    return {
+      success: true,
+      token: AuthToken,
+      user,
+      message: "Logged in successfully.",
+    };
+  } catch (error) {
+    console.log(JSON.stringify(error, null, 2));
+    return {
+      success: false,
+      message: "Error occurred while signingIn. ",
+    };
+  }
+};
 
 // send otp fn
-
 const handleOtpSendFunction = async (phone_no: number) => {
   try {
     let user = await User.findOne({ phone_no });
@@ -140,7 +202,7 @@ const handleRegistrationFunction = async (data: any) => {
     // creating new user
     const user = await User.create(newUserPayload);
 
-    await SendEmailBySMTP(email, "OTP verification Code", otp);
+    const emailRes = await SendEmailBySMTP(email, "OTP verification Code", otp);
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, {
       expiresIn: "30d",
@@ -520,7 +582,7 @@ const handlePasswordReset = async (data: {
 
     await user.save();
 
-    // creatinh new notification
+    // creating new notification
     const newNotificationPayload = {
       title: "Your password has been updated successfully.",
       description:
@@ -553,4 +615,5 @@ export {
   handleOtpSendFunction,
   handleLoginWithPhoneFunction,
   handleVerifyPhoneOtpFunction,
+  handleSignIn,
 };

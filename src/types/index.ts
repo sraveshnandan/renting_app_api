@@ -17,3 +17,10 @@ export type PhoneVerificationPayload = {
   phone_no: number;
   otp: number;
 };
+
+export type DecodedTokenData = {
+  user_country_code: string;
+  user_phone_number: number;
+  user_first_name?: string;
+  user_last_name?:string
+};
