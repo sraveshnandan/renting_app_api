@@ -17,6 +17,7 @@ import {
 
 const handleSignIn = async (token: string, role?: string) => {
   try {
+    console.log("log", token, role);
     const decodedTokenData: DecodedTokenData | any = jwt.verify(
       token,
       PHMAIL_API_KEY
@@ -33,6 +34,7 @@ const handleSignIn = async (token: string, role?: string) => {
         phone_no: Number(decodedTokenData?.phone_no),
         first_name: "John",
         last_name: "Doe",
+        email: "test@test.com",
         avatar: {
           public_id: "demo",
           url: "https://avatar.iran.liara.run/public",
