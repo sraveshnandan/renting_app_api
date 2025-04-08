@@ -23,7 +23,7 @@ const handleSignIn = async (token: string, role?: string) => {
     );
     console.log("decoded data", decodedTokenData);
     // checking user account in database
-    const phone_no = Number(decodedTokenData.phone_no);
+    const phone_no = Number(decodedTokenData?.phone_no);
     const user = await User.findOne({ phone_no });
 
     if (!user) {
@@ -31,8 +31,8 @@ const handleSignIn = async (token: string, role?: string) => {
       console.log("No account found , creating new One");
       const user = await User.create({
         phone_no: Number(decodedTokenData?.phone_no),
-        first_name: decodedTokenData?.user_first_name || "John",
-        last_name: decodedTokenData?.user_last_name || "Doe",
+        first_name: "John",
+        last_name: "Doe",
         avatar: {
           public_id: "demo",
           url: "https://avatar.iran.liara.run/public",
