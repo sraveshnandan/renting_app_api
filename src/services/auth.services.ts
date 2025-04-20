@@ -22,11 +22,10 @@ const handleSignIn = async (token: string, role?: string) => {
       token,
       PHMAIL_API_KEY
     );
-    console.log("decoded data", decodedTokenData);
+
     // checking user account in database
     const phone_no = Number(decodedTokenData?.phone_no);
     const user = await User.findOne({ phone_no });
-    console.log("ur", user);
 
     if (!user?._id) {
       // if token consist a user_first_name then creating a new user account
@@ -34,8 +33,8 @@ const handleSignIn = async (token: string, role?: string) => {
       console.log("No account found , creating new One");
       const user = await User.create({
         phone_no: Number(decodedTokenData?.phone_no),
-        first_name: "John",
-        last_name: "Doe",
+        first_name: decodedTokenData?.user_first_name || "John",
+        last_name: decodedTokenData?.user_last_name || "Doe",
         email: randomMail,
         avatar: {
           public_id: "demo",
