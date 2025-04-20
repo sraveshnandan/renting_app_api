@@ -29,6 +29,7 @@ const server = new ApolloServer({
 // graphql server
 const startGraphQlServer = async () => {
   console.log("connecting to the database.");
+
   mongoose
     .connect(MongoDbUri)
     .then(async (con) => {

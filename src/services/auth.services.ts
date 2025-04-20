@@ -26,15 +26,17 @@ const handleSignIn = async (token: string, role?: string) => {
     // checking user account in database
     const phone_no = Number(decodedTokenData?.phone_no);
     const user = await User.findOne({ phone_no });
+    console.log("ur", user);
 
-    if (!user) {
+    if (!user?._id) {
       // if token consist a user_first_name then creating a new user account
+      const randomMail = Math.random().toString() + "@gmail.com";
       console.log("No account found , creating new One");
       const user = await User.create({
         phone_no: Number(decodedTokenData?.phone_no),
         first_name: "John",
         last_name: "Doe",
-        email: "test@test.com",
+        email: randomMail,
         avatar: {
           public_id: "demo",
           url: "https://avatar.iran.liara.run/public",
